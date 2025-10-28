@@ -1,0 +1,40 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- Função para encontrar o Brainrot mais próximo
+local function findClosestBrainrot()
+    local closestBrainrot = nil
+    local shortestDistance = math.huge
+    for _, brainrot in pairs(workspace.Brainrots:GetChildren()) do
+        if brainrot:FindFirstChild("TouchInterest") then -- ou outra forma de identificar Brainrot
+            local distance = (brainrot.Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude
+            if distance < shortestDistance then
+                shortestDistance = distance
+                closestBrainrot = brainrot
+            end
+        end
+    end
+    return closestBrainrot
+end
+
+-- Função para mover o personagem até o Brainrot
+local function moveToBrainrot(brainrot)
+    if brainrot then
+        LocalPlayer.Character.Humanoid:MoveTo(brainrot.Position)
+    end
+end
+
+-- Auto collect loop
+while true do
+    local brainrot = findClosestBrainrot()
+    if brainrot then
+        moveToBrainrot(brainrot)
+        -- Espera até estar perto para coletar, exemplo 5 studs
+        repeat
+            RunService.Heartbeat:Wait()
+        until (brainrot.Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude < 5
+        -- Aqui insira comando para "coletar" se necessário (exemplo: tocar o objeto ou disparar evento)
+    end
+    wait(0.5)
+end
